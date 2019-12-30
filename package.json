@@ -1,0 +1,106 @@
+{
+  "name": "k6-from-postman",
+  "version": "0.0.5",
+  "description": "",
+  "main": "lib/index.js",
+  "bin": {
+    "k6-from-postman": "lib/index.js"
+  },
+  "typings": "lib/index.d.ts",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "build": "rimraf lib && tsc -p tsconfig.build.json",
+    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "lint": "tslint --project tsconfig.json --fix \"src/**/*.ts\" && prettier --write \"src/**/*.ts\"",
+    "cover": "jest --coverage",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "semantic-release": "semantic-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nkeenan38/k6-from-postman.git"
+  },
+  "files": [
+    "lib",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [],
+  "author": "Nick Keenan <nkeenan38@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nkeenan38/k6-from-postman/issues"
+  },
+  "homepage": "https://github.com/nkeenan38/k6-from-postman#readme",
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "commander": "^4.0.1",
+    "nodemon": "^2.0.2",
+    "postman-collection": "^3.5.5",
+    "ts-morph": "^6.0.2",
+    "tslib": "^1.9.3"
+  },
+  "devDependencies": {
+    "@semantic-release/condition-codeship": "^1.1.0",
+    "@semantic-release/release-notes-generator": "^7.1.4",
+    "@types/jest": "^24.0.13",
+    "@types/postman-collection": "^3.0.3",
+    "coveralls": "^3.0.3",
+    "husky": "^2.3.0",
+    "jest": "^24.8.0",
+    "lint-staged": "^8.1.7",
+    "prettier": "^1.17.1",
+    "rimraf": "^2.6.3",
+    "semantic-release": "^15.13.12",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.16.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-config-standard": "^8.0.1"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "tslint --fix --project tsconfig.json",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testRegex": "(/__tests__/.*\\.(test|spec))\\.(ts|tsx|js)$",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "modulePaths": [
+      "src"
+    ],
+    "coverageDirectory": "<rootDir>/coverage",
+    "transform": {
+      "\\.(ts|tsx)": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "globals": {}
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}
