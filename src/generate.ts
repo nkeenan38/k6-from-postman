@@ -13,12 +13,16 @@ export function generateGet(
     writer =>
       writer
         .writeLine('/// <reference types="k6" />')
-        .writeLine(`import { Response, get } from 'k6/http'`)
+        .writeLine(`import { Response, get, RefinedParams } from 'k6/http'`)
         .blankLine(),
     {
       overwrite: true
     }
   )
+  parameters.push({
+    name: 'params',
+    type: "RefinedParams<'text'>"
+  })
   let func = source.addFunction({
     name: functionName,
     parameters: parameters
@@ -27,7 +31,7 @@ export function generateGet(
   func.setReturnType('Response')
   func.setBodyText(writer =>
     writer
-      .writeLine(`const response: Response = get(${url})`)
+      .writeLine(`const response: Response = get(${url}, params)`)
       .tab()
       .write('if (response.status !== 200) {\n')
       .tab(2)
@@ -54,7 +58,7 @@ export function generatePost(
       writer
         .writeLine('/// <reference types="k6" />')
         .writeLine(
-          `import { Response, post, StructuredRequestBody } from 'k6/http'`
+          `import { Response, post, StructuredRequestBody, RefinedParams } from 'k6/http'`
         )
         .blankLine(),
     {
@@ -65,6 +69,10 @@ export function generatePost(
     name: 'body',
     type: 'string | StructuredRequestBody'
   })
+  parameters.push({
+    name: 'params',
+    type: "RefinedParams<'text'>"
+  })
   let func = source.addFunction({
     name: functionName,
     parameters: parameters
@@ -73,7 +81,7 @@ export function generatePost(
   func.setReturnType('Response')
   func.setBodyText(writer =>
     writer
-      .writeLine(`const response: Response = post(${url}, body)`)
+      .writeLine(`const response: Response = post(${url}, body, params)`)
       .tab()
       .write('if (response.status !== 201) {\n')
       .tab(2)
@@ -100,7 +108,7 @@ export function generatePatch(
       writer
         .writeLine('/// <reference types="k6" />')
         .writeLine(
-          `import { Response, patch, StructuredRequestBody } from 'k6/http'`
+          `import { Response, patch, StructuredRequestBody, RefinedParams } from 'k6/http'`
         )
         .blankLine(),
     {
@@ -111,6 +119,10 @@ export function generatePatch(
     name: 'body',
     type: 'string | StructuredRequestBody'
   })
+  parameters.push({
+    name: 'params',
+    type: "RefinedParams<'text'>"
+  })
   let func = source.addFunction({
     name: functionName,
     parameters: parameters
@@ -119,7 +131,7 @@ export function generatePatch(
   func.setReturnType('Response')
   func.setBodyText(writer =>
     writer
-      .writeLine(`const response: Response = patch(${url}, body)`)
+      .writeLine(`const response: Response = patch(${url}, body, params)`)
       .tab()
       .write('if (response.status !== 200) {\n')
       .tab(2)
@@ -145,12 +157,16 @@ export function generateDelete(
     writer =>
       writer
         .writeLine('/// <reference types="k6" />')
-        .writeLine(`import { Response, del } from 'k6/http'`)
+        .writeLine(`import { Response, del, RefinedParams } from 'k6/http'`)
         .blankLine(),
     {
       overwrite: true
     }
   )
+  parameters.push({
+    name: 'params',
+    type: "RefinedParams<'text'>"
+  })
   let func = source.addFunction({
     name: functionName,
     parameters: parameters
@@ -159,7 +175,7 @@ export function generateDelete(
   func.setReturnType('Response')
   func.setBodyText(writer =>
     writer
-      .writeLine(`const response: Response = del(${url})`)
+      .writeLine(`const response: Response = del(${url}, null, params)`)
       .tab()
       .write('if (response.status !== 200) {\n')
       .tab(2)
