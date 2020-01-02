@@ -1,11 +1,16 @@
 import * as fs from 'fs'
 import { Collection, Request, ItemGroup, Item, Url } from 'postman-collection'
-import { OptionalKind, ParameterDeclarationStructure } from 'ts-morph'
+import {
+  OptionalKind,
+  ParameterDeclarationStructure,
+  SourceFile
+} from 'ts-morph'
 import {
   generateGet,
   generatePost,
   generatePatch,
-  generateDelete
+  generateDelete,
+  getSourceFile
 } from './generate'
 
 export function parsePostmanCollection(
@@ -19,28 +24,30 @@ export function parsePostmanCollection(
     contents = contents.replace(replace, value)
   })
   let collection: Collection = new Collection(JSON.parse(contents))
-  collection.items
-    .all()
-    .forEach(item =>
-      generateFromItem(item, `${destination}/${collection.name}`)
+  let source = getSourceFile(`${destination}/${collection.name}`)
+  collection.items.all().forEach(item => {
+    generateFromItems(
+      item as ItemGroup<Request>,
+      `${destination}/${collection.name}`
     )
+  })
 }
 
-function generateFromItem(
-  item: Item | Request | ItemGroup<Request>,
-  destination: string
-) {
-  if (item instanceof Item) {
-    generateRequestFunction(item, destination)
-  } else {
-    let group = item as ItemGroup<Request>
-    group?.items
-      ?.all()
-      .forEach(item => generateFromItem(item, `${destination}/${group.name}`))
-  }
+function generateFromItems(group: ItemGroup<Request>, destination: string) {
+  let source = getSourceFile(`${destination}/${group.name}`)
+  group?.items?.all().forEach(item => {
+    if (item instanceof Item) {
+      generateRequestFunction(item as Item, source)
+    } else {
+      generateFromItems(
+        item as ItemGroup<Request>,
+        `${destination}/${group.name}`
+      )
+    }
+  })
 }
 
-function generateRequestFunction(item: Item, destination: string) {
+function generateRequestFunction(item: Item, source: SourceFile) {
   const functionName = camelize(item.name)
   const url: Url = item.request.url
   const host = url.host?.join('.')
@@ -54,7 +61,7 @@ function generateRequestFunction(item: Item, destination: string) {
         functionName,
         `\`${protocol}://${host}/${path}\``,
         parameters,
-        destination
+        source
       )
       break
     case 'POST':
@@ -62,7 +69,7 @@ function generateRequestFunction(item: Item, destination: string) {
         functionName,
         `\`${protocol}://${host}/${path}\``,
         parameters,
-        destination
+        source
       )
       break
     case 'PATCH':
@@ -70,7 +77,7 @@ function generateRequestFunction(item: Item, destination: string) {
         functionName,
         `\`${protocol}://${host}/${path}\``,
         parameters,
-        destination
+        source
       )
       break
     case 'DELETE':
@@ -78,7 +85,7 @@ function generateRequestFunction(item: Item, destination: string) {
         functionName,
         `\`${protocol}://${host}/${path}\``,
         parameters,
-        destination
+        source
       )
       break
     default:

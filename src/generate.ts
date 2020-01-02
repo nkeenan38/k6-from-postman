@@ -1,24 +1,34 @@
-import { Project, OptionalKind, ParameterDeclarationStructure } from 'ts-morph'
-
+import {
+  Project,
+  OptionalKind,
+  ParameterDeclarationStructure,
+  SourceFile
+} from 'ts-morph'
 const project = new Project()
 
-export function generateGet(
-  functionName: string,
-  url: string,
-  parameters: OptionalKind<ParameterDeclarationStructure>[],
-  destination: string
-) {
+export function getSourceFile(destination: string): SourceFile {
   let source = project.createSourceFile(
-    `${destination}/${functionName}.ts`,
+    `${destination.replace(/\s+/g, '-')}.ts`,
     writer =>
       writer
         .writeLine('/// <reference types="k6" />')
-        .writeLine(`import { Response, get, RefinedParams } from 'k6/http'`)
+        .writeLine(
+          `import { Response, RefinedParams, StructuredRequestBody, post, get, patch, del } from 'k6/http'`
+        )
         .blankLine(),
     {
       overwrite: true
     }
   )
+  return source
+}
+
+export function generateGet(
+  functionName: string,
+  url: string,
+  parameters: OptionalKind<ParameterDeclarationStructure>[],
+  source: SourceFile
+) {
   parameters.push({
     name: 'params',
     type: "RefinedParams<'text'>"
@@ -50,21 +60,8 @@ export function generatePost(
   functionName: string,
   url: string,
   parameters: OptionalKind<ParameterDeclarationStructure>[],
-  destination: string
+  source: SourceFile
 ) {
-  let source = project.createSourceFile(
-    `${destination}/${functionName}.ts`,
-    writer =>
-      writer
-        .writeLine('/// <reference types="k6" />')
-        .writeLine(
-          `import { Response, post, StructuredRequestBody, RefinedParams } from 'k6/http'`
-        )
-        .blankLine(),
-    {
-      overwrite: true
-    }
-  )
   parameters.push({
     name: 'body',
     type: 'string | StructuredRequestBody'
@@ -100,21 +97,8 @@ export function generatePatch(
   functionName: string,
   url: string,
   parameters: OptionalKind<ParameterDeclarationStructure>[],
-  destination: string
+  source: SourceFile
 ) {
-  let source = project.createSourceFile(
-    `${destination}/${functionName}.ts`,
-    writer =>
-      writer
-        .writeLine('/// <reference types="k6" />')
-        .writeLine(
-          `import { Response, patch, StructuredRequestBody, RefinedParams } from 'k6/http'`
-        )
-        .blankLine(),
-    {
-      overwrite: true
-    }
-  )
   parameters.push({
     name: 'body',
     type: 'string | StructuredRequestBody'
@@ -150,19 +134,8 @@ export function generateDelete(
   functionName: string,
   url: string,
   parameters: OptionalKind<ParameterDeclarationStructure>[],
-  destination: string
+  source: SourceFile
 ) {
-  let source = project.createSourceFile(
-    `${destination}/${functionName}.ts`,
-    writer =>
-      writer
-        .writeLine('/// <reference types="k6" />')
-        .writeLine(`import { Response, del, RefinedParams } from 'k6/http'`)
-        .blankLine(),
-    {
-      overwrite: true
-    }
-  )
   parameters.push({
     name: 'params',
     type: "RefinedParams<'text'>"
@@ -177,7 +150,7 @@ export function generateDelete(
     writer
       .writeLine(`const response: Response = del(${url}, null, params)`)
       .tab()
-      .write('if (response.status !== 200) {\n')
+      .write('if (response.status !== 200 && response.status !== 204) {\n')
       .tab(2)
       .write(
         `throw \`error: ${functionName} returned \$\{response.status\}\`\n`
