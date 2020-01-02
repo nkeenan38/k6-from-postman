@@ -1,6 +1,6 @@
 {
   "name": "k6-from-postman",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "main": "lib/index.js",
   "bin": {
