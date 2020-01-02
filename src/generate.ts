@@ -13,7 +13,7 @@ export function getSourceFile(destination: string): SourceFile {
       writer
         .writeLine('/// <reference types="k6" />')
         .writeLine(
-          `import { Response, RefinedParams, StructuredRequestBody, post, get, patch, del } from 'k6/http'`
+          `import { Response, RefinedParams, StructuredRequestBody, post, put, get, patch, del } from 'k6/http'`
         )
         .blankLine(),
     {
@@ -79,6 +79,43 @@ export function generatePost(
   func.setBodyText(writer =>
     writer
       .writeLine(`const response: Response = post(${url}, body, params)`)
+      .tab()
+      .write('if (response.status !== 201) {\n')
+      .tab(2)
+      .write(
+        `throw \`error: ${functionName} returned \$\{response.status\}\`\n`
+      )
+      .tab()
+      .write('}\n')
+      .tab()
+      .write('return response')
+  )
+  source.saveSync()
+}
+
+export function generatePut(
+  functionName: string,
+  url: string,
+  parameters: OptionalKind<ParameterDeclarationStructure>[],
+  source: SourceFile
+) {
+  parameters.push({
+    name: 'body',
+    type: 'string | StructuredRequestBody'
+  })
+  parameters.push({
+    name: 'params',
+    type: "RefinedParams<'text'>"
+  })
+  let func = source.addFunction({
+    name: functionName,
+    parameters: parameters
+  })
+  func.setIsExported(true)
+  func.setReturnType('Response')
+  func.setBodyText(writer =>
+    writer
+      .writeLine(`const response: Response = put(${url}, body, params)`)
       .tab()
       .write('if (response.status !== 201) {\n')
       .tab(2)

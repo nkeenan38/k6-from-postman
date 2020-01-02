@@ -10,7 +10,8 @@ import {
   generatePost,
   generatePatch,
   generateDelete,
-  getSourceFile
+  getSourceFile,
+  generatePut
 } from './generate'
 
 export function parsePostmanCollection(
@@ -82,6 +83,14 @@ function generateRequestFunction(item: Item, source: SourceFile) {
       break
     case 'DELETE':
       generateDelete(
+        functionName,
+        `\`${protocol}://${host}/${path}\``,
+        parameters,
+        source
+      )
+      break
+    case 'PUT':
+      generatePut(
         functionName,
         `\`${protocol}://${host}/${path}\``,
         parameters,
