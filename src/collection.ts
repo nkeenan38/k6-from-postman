@@ -45,8 +45,8 @@ function generateRequestFunction(item: Item, destination: string) {
   const url: Url = item.request.url
   const host = url.host?.join('.')
   const protocol = url.protocol || 'https'
-  const parameters = getParameters(url.path)
-  const path = getPath(url.path)
+  const parameters = getParameters(url)
+  const path = getPath(url)
 
   switch (item.request.method) {
     case 'GET':
@@ -86,18 +86,27 @@ function generateRequestFunction(item: Item, destination: string) {
   }
 }
 
-function getPath(path: string[]): string {
-  return path
+function getPath(url: Url): string {
+  let path = url.path
     .map(item =>
       item.startsWith(':') ? `\$\{${camelize(item.replace(':', ''))}\}` : item
     )
     .join('/')
+  if (url.query.count() > 0) {
+    return path.concat(
+      `?${url.query
+        .map(item => `${item.key}=\$\{${camelize(item.key)}\}`)
+        .join('&')}`
+    )
+  }
+  return path
 }
 
 function getParameters(
-  path: string[]
+  url: Url
 ): OptionalKind<ParameterDeclarationStructure>[] {
-  return path
+  const path = url.path
+  let parameters = path
     .filter(item => item.startsWith(':'))
     .map(item => {
       return {
@@ -105,12 +114,23 @@ function getParameters(
         type: 'string'
       }
     })
+  let queries = url.query
+    .filter(item => item.key !== null, null)
+    .map(item => {
+      return {
+        name: camelize(item.key),
+        type: 'string'
+      }
+    })
+  return parameters.concat(queries)
 }
 
-function camelize(str: string) {
+function camelize(str: string | null) {
+  if (!str) return ''
   return str
+    .replace(/_/g, '-')
     .replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
       return index === 0 ? word.toLowerCase() : word.toUpperCase()
     })
-    .replace(/\s+|-/g, '')
+    .replace(/\s+|-|_/g, '')
 }
