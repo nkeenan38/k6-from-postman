@@ -18,7 +18,8 @@
     "lint": "tslint --project tsconfig.json --fix \"src/**/*.ts\" && prettier --write \"src/**/*.ts\"",
     "cover": "jest --coverage",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "release:patch": "npm run lint && npm run build && npm version patch && npm publish"
   },
   "repository": {
     "type": "git",
