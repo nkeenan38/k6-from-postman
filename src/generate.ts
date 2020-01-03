@@ -46,7 +46,7 @@ export function generateGet(
       .write('if (response.status !== 200) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
       )
       .tab()
       .write('}\n')
@@ -83,7 +83,7 @@ export function generatePost(
       .write('if (response.status !== 201) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
       )
       .tab()
       .write('}\n')
@@ -120,7 +120,7 @@ export function generatePut(
       .write('if (response.status !== 201) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
       )
       .tab()
       .write('}\n')
@@ -157,7 +157,7 @@ export function generatePatch(
       .write('if (response.status !== 200) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
       )
       .tab()
       .write('}\n')
@@ -190,7 +190,7 @@ export function generateDelete(
       .write('if (response.status !== 200 && response.status !== 204) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
       )
       .tab()
       .write('}\n')
