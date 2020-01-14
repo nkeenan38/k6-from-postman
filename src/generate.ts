@@ -43,10 +43,10 @@ export function generateGet(
     writer
       .writeLine(`const response: Response = get(${url}, params)`)
       .tab()
-      .write('if (response.status !== 200) {\n')
+      .write('if (response.error_code) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
       )
       .tab()
       .write('}\n')
@@ -80,10 +80,10 @@ export function generatePost(
     writer
       .writeLine(`const response: Response = post(${url}, body, params)`)
       .tab()
-      .write('if (response.status !== 201) {\n')
+      .write('if (response.error_code) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
       )
       .tab()
       .write('}\n')
@@ -117,10 +117,10 @@ export function generatePut(
     writer
       .writeLine(`const response: Response = put(${url}, body, params)`)
       .tab()
-      .write('if (response.status !== 201) {\n')
+      .write('if (response.error_code) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
       )
       .tab()
       .write('}\n')
@@ -154,10 +154,10 @@ export function generatePatch(
     writer
       .writeLine(`const response: Response = patch(${url}, body, params)`)
       .tab()
-      .write('if (response.status !== 200) {\n')
+      .write('if (response.error_code) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
       )
       .tab()
       .write('}\n')
@@ -187,10 +187,10 @@ export function generateDelete(
     writer
       .writeLine(`const response: Response = del(${url}, null, params)`)
       .tab()
-      .write('if (response.status !== 200 && response.status !== 204) {\n')
+      .write('if (response.error_code) {\n')
       .tab(2)
       .write(
-        `throw \`error: ${functionName} returned \$\{response.status\}: \$\{response.error\}\`\n`
+        `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
       )
       .tab()
       .write('}\n')
