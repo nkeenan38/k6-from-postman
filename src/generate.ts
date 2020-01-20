@@ -15,6 +15,8 @@ export function getSourceFile(destination: string): SourceFile {
         .writeLine(
           `import { Response, RefinedParams, StructuredRequestBody, post, put, get, patch, del } from 'k6/http'`
         )
+        .writeLine("import { check } from 'k6'")
+        .writeLine('import { parse } from "../../faker/helpers/util.js";')
         .blankLine(),
     {
       overwrite: true
@@ -55,7 +57,11 @@ export function generateGet(
       .write('}\n')
       .write(`const response: Response = get(${url}, params)\n`)
       .tab()
-      .write('if (response.error_code) {\n')
+      .write('if (!check(response, {\n')
+      .tab(2)
+      .write("'is successful': r => !r.error_code\n")
+      .tab()
+      .write('})) {\n')
       .tab(2)
       .write(
         `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
@@ -104,7 +110,11 @@ export function generatePost(
       .write('}\n')
       .write(`const response: Response = post(${url}, body, params)\n`)
       .tab()
-      .write('if (response.error_code) {\n')
+      .write('if (!check(response, {\n')
+      .tab(2)
+      .write("'is successful': r => !r.error_code\n")
+      .tab()
+      .write('})) {\n')
       .tab(2)
       .write(
         `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
@@ -153,7 +163,11 @@ export function generatePut(
       .write('}\n')
       .write(`const response: Response = put(${url}, body, params)\n`)
       .tab()
-      .write('if (response.error_code) {\n')
+      .write('if (!check(response, {\n')
+      .tab(2)
+      .write("'is successful': r => !r.error_code\n")
+      .tab()
+      .write('})) {\n')
       .tab(2)
       .write(
         `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
@@ -202,7 +216,11 @@ export function generatePatch(
       .write('}\n')
       .write(`const response: Response = patch(${url}, body, params)\n`)
       .tab()
-      .write('if (response.error_code) {\n')
+      .write('if (!check(response, {\n')
+      .tab(2)
+      .write("'is successful': r => !r.error_code\n")
+      .tab()
+      .write('})) {\n')
       .tab(2)
       .write(
         `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
@@ -247,7 +265,11 @@ export function generateDelete(
       .write('}\n')
       .write(`const response: Response = del(${url}, null, params)\n`)
       .tab()
-      .write('if (response.error_code) {\n')
+      .write('if (!check(response, {\n')
+      .tab(2)
+      .write("'is successful': r => !r.error_code\n")
+      .tab()
+      .write('})) {\n')
       .tab(2)
       .write(
         `throw \`error: ${functionName} returned \$\{response.error_code\}: \$\{response.body\}\`\n`
